@@ -1,16 +1,46 @@
 package com.example.demo.security;
 
 import com.example.demo.model.UserAccount;
-import org.springframework.stereotype.Component;
+import io.jsonwebtoken.*;
+import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
-    
+
+    private String jwtSecret = "secret";
+
     public String generateToken(UserAccount user) {
-        return "jwt-token-" + user.getEmail();
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("userId", user.getId())
+                .claim("role", user.getRole())
+                .setIssuedAt(new Date())
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .compact();
     }
-    
+
     public boolean validateToken(String token) {
-        return token != null && token.startsWith("jwt-token-");
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String getEmail(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public String getRole(String token) {
+        return getClaims(token).get("role", String.class);
+    }
+
+    public Long getUserId(String token) {
+        return getClaims(token).get("userId", Long.class);
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret)
+                .parseClaimsJws(token).getBody();
     }
 }
