@@ -22,14 +22,8 @@ public class EmployeeProfileController {
     }
 
     @PutMapping("/{id}")
-    public EmployeeProfileDto update(@PathVariable Long id,
-                                     @RequestBody EmployeeProfileDto dto) {
+    public EmployeeProfileDto update(@PathVariable Long id, @RequestBody EmployeeProfileDto dto) {
         return service.update(id, dto);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deactivate(@PathVariable Long id) {
-        service.deactivate(id);
     }
 
     @GetMapping("/{id}")
@@ -38,8 +32,7 @@ public class EmployeeProfileController {
     }
 
     @GetMapping("/team/{teamName}")
-    public List<EmployeeProfileDto> getByTeam(
-            @PathVariable String teamName) {
+    public List<EmployeeProfileDto> getByTeam(@PathVariable String teamName) {
         return service.getByTeam(teamName);
     }
 
