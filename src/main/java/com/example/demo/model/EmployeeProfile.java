@@ -1,63 +1,31 @@
-package com.example.demo.model;
+package com.example.demo.model; // <- make sure package matches folder structure
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+// JPA imports
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "employeeId"),
-        @UniqueConstraint(columnNames = "email")
-    }
-)
+@Table(name = "employee_profile", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"email"})
+})
 public class EmployeeProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String employeeId;
-    private String fullName;
+    private String name;
     private String email;
-    private String teamName;
-    private String role;
-
-    private boolean active = true;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToMany
-    private Set<EmployeeProfile> colleagues = new HashSet<>();
+    private List<Role> roles;
 
-    // getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getEmployeeId() { return employeeId; }
-    public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
-
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getTeamName() { return teamName; }
-    public void setTeamName(String teamName) { this.teamName = teamName; }
-
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
-
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public Set<EmployeeProfile> getColleagues() { return colleagues; }
-    public void setColleagues(Set<EmployeeProfile> colleagues) {
-        this.colleagues = colleagues;
-    }
+    // getters & setters
 }
