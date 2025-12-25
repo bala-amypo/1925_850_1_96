@@ -1,18 +1,16 @@
 package com.example.demo.util;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DateRangeUtil {
-
     public static List<LocalDate> daysBetween(LocalDate start, LocalDate end) {
-        List<LocalDate> list = new ArrayList<>();
-        LocalDate d = start;
-        while (!d.isAfter(end)) {
-            list.add(d);
-            d = d.plusDays(1);
+        List<LocalDate> dates = new ArrayList<>();
+        LocalDate curr = start;
+        while (!curr.isAfter(end)) {
+            dates.add(curr);
+            curr = curr.plusDays(1);
         }
-        return list;
+        return dates;
     }
 }
