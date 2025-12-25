@@ -4,24 +4,18 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "capacity_alerts")
 public class CapacityAlert {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String teamName;
-
-    @Column(nullable = false)
     private LocalDate date;
-
     private String severity;
-
     private String message;
 
-    public CapacityAlert() {}
-
+    // getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
