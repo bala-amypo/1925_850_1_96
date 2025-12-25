@@ -3,73 +3,53 @@ package com.example.demo.service.impl;
 import com.example.demo.dto.CapacityAnalysisResultDto;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.CapacityAlert;
-import com.example.demo.model.LeaveRequest;
-import com.example.demo.model.TeamCapacityConfig;
-import com.example.demo.repository.CapacityAlertRepository;
-import com.example.demo.repository.LeaveRequestRepository;
-import com.example.demo.repository.TeamCapacityConfigRepository;
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.CapacityAnalysisService;
+import com.example.demo.util.DateRangeUtil;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
-    
-    private final TeamCapacityConfigRepository configRepository;
-    private final LeaveRequestRepository leaveRepository;
-    private final CapacityAlertRepository alertRepository;
+    private final TeamCapacityConfigRepository capacityRepo;
+    private final EmployeeProfileRepository employeeRepo;
+    private final LeaveRequestRepository leaveRepo;
+    private final CapacityAlertRepository alertRepo;
 
-    public CapacityAnalysisServiceImpl(TeamCapacityConfigRepository configRepository,
-                                     LeaveRequestRepository leaveRepository,
-                                     CapacityAlertRepository alertRepository) {
-        this.configRepository = configRepository;
-        this.leaveRepository = leaveRepository;
-        this.alertRepository = alertRepository;
+    public CapacityAnalysisServiceImpl(TeamCapacityConfigRepository cr, EmployeeProfileRepository er, LeaveRequestRepository lr, CapacityAlertRepository ar) {
+        this.capacityRepo = cr;
+        this.employeeRepo = er;
+        this.leaveRepo = lr;
+        this.alertRepo = ar;
     }
 
     @Override
-    public CapacityAnalysisResultDto analyzeTeamCapacity(String teamName, LocalDate start, LocalDate end) {
-        if (start.isAfter(end)) {
-            throw new BadRequestException("Start date");
-        }
+    public CapacityAnalysisResultDto analyzeTeamCapacity(String team, LocalDate start, LocalDate end) {
+        if (start.isAfter(end)) throw new BadRequestException("Start date error");
         
-        TeamCapacityConfig config = configRepository.findByTeamName(teamName)
+        TeamCapacityConfig config = capacityRepo.findByTeamName(team)
                 .orElseThrow(() -> new ResourceNotFoundException("Capacity config not found"));
-        
-        if (config.getTotalHeadcount() <= 0) {
-            throw new BadRequestException("Invalid total headcount");
-        }
-        
-        List<LeaveRequest> overlappingLeaves = leaveRepository.findApprovedOverlappingForTeam(teamName, start, end);
-        
+
+        if (config.getTotalHeadcount() < 1) throw new BadRequestException("Invalid total headcount");
+
+        List<LocalDate> range = DateRangeUtil.daysBetween(start, end);
         Map<LocalDate, Double> capacityByDate = new HashMap<>();
         boolean risky = false;
-        
-        LocalDate current = start;
-        while (!current.isAfter(end)) {
-            final LocalDate currentDate = current;
-            long leavesOnDate = overlappingLeaves.stream()
-                    .filter(leave -> !currentDate.isBefore(leave.getStartDate()) && !currentDate.isAfter(leave.getEndDate()))
-                    .count();
+
+        for (LocalDate date : range) {
+            long onLeave = leaveRepo.findApprovedOnDate(date).stream()
+                    .filter(l -> l.getEmployee().getTeamName().equals(team)).count();
             
-            double capacity = ((double) (config.getTotalHeadcount() - leavesOnDate) / config.getTotalHeadcount()) * 100;
-            capacityByDate.put(currentDate, capacity);
+            double capacity = ((double)(config.getTotalHeadcount() - onLeave) / config.getTotalHeadcount()) * 100;
+            capacityByDate.put(date, capacity);
             
             if (capacity < config.getMinCapacityPercent()) {
                 risky = true;
-                CapacityAlert alert = new CapacityAlert(teamName, currentDate, "HIGH", 
-                        "Team capacity below minimum threshold");
-                alertRepository.save(alert);
+                alertRepo.save(new CapacityAlert(team, date, "HIGH", "Low capacity"));
             }
-            
-            current = current.plusDays(1);
         }
-        
         return new CapacityAnalysisResultDto(risky, capacityByDate);
     }
 }
