@@ -5,12 +5,12 @@ import java.util.List;
 
 public class DateRangeUtil {
     public static List<LocalDate> daysBetween(LocalDate start, LocalDate end) {
-        List<LocalDate> dates = new ArrayList<>();
+        List<LocalDate> totalDates = new ArrayList<>();
         LocalDate curr = start;
         while (!curr.isAfter(end)) {
-            dates.add(curr);
+            totalDates.add(curr);
             curr = curr.plusDays(1);
         }
-        return dates;
+        return totalDates;
     }
 }
