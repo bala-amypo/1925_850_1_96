@@ -2,41 +2,38 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.LeaveRequestDto;
 import com.example.demo.service.LeaveRequestService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/leaves")
 public class LeaveRequestController {
-    
-    private final LeaveRequestService leaveService;
-    
-    public LeaveRequestController(LeaveRequestService leaveService) {
-        this.leaveService = leaveService;
+
+    private final LeaveRequestService service;
+
+    public LeaveRequestController(LeaveRequestService service) {
+        this.service = service;
     }
-    
+
     @PostMapping
-    public ResponseEntity<LeaveRequestDto> create(@RequestBody LeaveRequestDto dto) {
-        LeaveRequestDto created = leaveService.create(dto);
-        return ResponseEntity.ok(created);
+    public LeaveRequestDto create(@RequestBody LeaveRequestDto dto) {
+        return service.create(dto);
     }
-    
+
     @PutMapping("/{id}/approve")
-    public ResponseEntity<LeaveRequestDto> approve(@PathVariable Long id) {
-        LeaveRequestDto approved = leaveService.approve(id);
-        return ResponseEntity.ok(approved);
+    public LeaveRequestDto approve(@PathVariable Long id) {
+        return service.approve(id);
     }
-    
+
     @PutMapping("/{id}/reject")
-    public ResponseEntity<LeaveRequestDto> reject(@PathVariable Long id) {
-        LeaveRequestDto rejected = leaveService.reject(id);
-        return ResponseEntity.ok(rejected);
+    public LeaveRequestDto reject(@PathVariable Long id) {
+        return service.reject(id);
     }
-    
+
     @GetMapping("/employee/{id}")
-    public ResponseEntity<List<LeaveRequestDto>> getByEmployee(@PathVariable Long id) {
-        List<LeaveRequestDto> leaves = leaveService.getByEmployee(id);
-        return ResponseEntity.ok(leaves);
+    public List<LeaveRequestDto> getByEmployee(@PathVariable Long id) {
+        return service.getByEmployee(id);
     }
 }

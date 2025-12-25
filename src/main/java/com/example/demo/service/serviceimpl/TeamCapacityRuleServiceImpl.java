@@ -9,48 +9,40 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TeamCapacityRuleServiceImpl implements TeamCapacityRuleService {
-    
-    private final TeamCapacityConfigRepository capacityRepo;
-    
-    public TeamCapacityRuleServiceImpl(TeamCapacityConfigRepository capacityRepo) {
-        this.capacityRepo = capacityRepo;
+
+    private final TeamCapacityConfigRepository repo;
+
+    public TeamCapacityRuleServiceImpl(TeamCapacityConfigRepository repo) {
+        this.repo = repo;
     }
-    
+
     @Override
     public TeamCapacityConfig createRule(TeamCapacityConfig config) {
-        validateConfig(config);
-        return capacityRepo.save(config);
+        validate(config);
+        return repo.save(config);
     }
-    
+
     @Override
     public TeamCapacityConfig updateRule(Long id, TeamCapacityConfig config) {
-        TeamCapacityConfig existing = capacityRepo.findById(id)
+        TeamCapacityConfig existing = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Capacity config not found"));
-        
-        validateConfig(config);
-        
+        validate(config);
         existing.setTeamName(config.getTeamName());
         existing.setTotalHeadcount(config.getTotalHeadcount());
         existing.setMinCapacityPercent(config.getMinCapacityPercent());
-        
-        return capacityRepo.save(existing);
+        return repo.save(existing);
     }
-    
+
     @Override
     public TeamCapacityConfig getRuleByTeam(String teamName) {
-        return capacityRepo.findByTeamName(teamName)
+        return repo.findByTeamName(teamName)
                 .orElseThrow(() -> new ResourceNotFoundException("Capacity config not found"));
     }
-    
-    private void validateConfig(TeamCapacityConfig config) {
-        if (config.getTotalHeadcount() == null || config.getTotalHeadcount() < 1) {
+
+    private void validate(TeamCapacityConfig config) {
+        if (config.getTotalHeadcount() < 1)
             throw new BadRequestException("Invalid total headcount");
-        }
-        
-        if (config.getMinCapacityPercent() == null || 
-            config.getMinCapacityPercent() < 1 || 
-            config.getMinCapacityPercent() > 100) {
-            throw new BadRequestException("Min capacity percent must be between 1 and 100");
-        }
+        if (config.getMinCapacityPercent() < 1 || config.getMinCapacityPercent() > 100)
+            throw new BadRequestException("Invalid min capacity percent");
     }
 }
