@@ -17,7 +17,9 @@ public class TeamCapacityRuleServiceImpl implements TeamCapacityRuleService {
 
     @Override
     public void createRule(TeamCapacityConfig config) {
-        validateConfig(config);
+        if (config.getTotalHeadcount() < 1) {
+            throw new BadRequestException("Invalid total headcount");
+        }
         capacityRepo.save(config);
     }
 
@@ -25,14 +27,5 @@ public class TeamCapacityRuleServiceImpl implements TeamCapacityRuleService {
     public TeamCapacityConfig getRuleByTeam(String teamName) {
         return capacityRepo.findByTeamName(teamName)
                 .orElseThrow(() -> new ResourceNotFoundException("Capacity config not found"));
-    }
-
-    private void validateConfig(TeamCapacityConfig config) {
-        if (config.getTotalHeadcount() < 1) {
-            throw new BadRequestException("Invalid total headcount: must be at least 1");
-        }
-        if (config.getMinCapacityPercent() < 1 || config.getMinCapacityPercent() > 100) {
-            throw new BadRequestException("minCapacityPercent must be between 1 and 100");
-        }
     }
 }
