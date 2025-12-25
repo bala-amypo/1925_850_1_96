@@ -1,5 +1,7 @@
 package com.example.demo.dto;
+
 import java.time.LocalDate;
+
 public class LeaveRequestDto {
     private Long id;
     private Long employeeId;
@@ -8,7 +10,7 @@ public class LeaveRequestDto {
     private String type;
     private String status;
     private String reason;
-    public LeaveRequestDto() {}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getEmployeeId() { return employeeId; }

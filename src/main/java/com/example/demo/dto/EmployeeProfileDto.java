@@ -1,4 +1,5 @@
 package com.example.demo.dto;
+
 public class EmployeeProfileDto {
     private Long id;
     private String employeeId;
@@ -6,7 +7,7 @@ public class EmployeeProfileDto {
     private String email;
     private String teamName;
     private String role;
-    public EmployeeProfileDto() {}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getEmployeeId() { return employeeId; }
