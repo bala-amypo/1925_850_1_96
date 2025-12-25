@@ -1,19 +1,27 @@
 package com.example.demo.model;
+
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 public class LeaveRequest {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne private EmployeeProfile employee;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private EmployeeProfile employee;
+
     private LocalDate startDate;
     private LocalDate endDate;
     private String type;
-    private String status; // PENDING, APPROVED, REJECTED
+    private String status;
     private String reason;
 
     public LeaveRequest() {}
+
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public EmployeeProfile getEmployee() { return employee; }

@@ -1,4 +1,5 @@
 package com.example.demo.model;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -6,20 +7,29 @@ import java.util.Set;
 
 @Entity
 public class EmployeeProfile {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true) private String employeeId;
+    @Column(unique = true, nullable = false)
+    private String employeeId;
     private String fullName;
-    @Column(unique = true) private String email;
+    @Column(unique = true, nullable = false)
+    private String email;
     private String teamName;
     private String role;
-    private boolean active = true;
+    private Boolean active = true;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @JoinTable(
+        name = "employee_colleagues",
+        joinColumns = @JoinColumn(name = "employee_id"),
+        inverseJoinColumns = @JoinColumn(name = "colleague_id")
+    )
     private Set<EmployeeProfile> colleagues = new HashSet<>();
 
     public EmployeeProfile() {}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getEmployeeId() { return employeeId; }
@@ -32,7 +42,11 @@ public class EmployeeProfile {
     public void setTeamName(String teamName) { this.teamName = teamName; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public void setActive(Boolean active) { this.active = active; }
+
+    // Test requires this naming specifically
+    public Boolean isActive() { return active; }
+    
     public Set<EmployeeProfile> getColleagues() { return colleagues; }
+    public void setColleagues(Set<EmployeeProfile> colleagues) { this.colleagues = colleagues; }
 }
