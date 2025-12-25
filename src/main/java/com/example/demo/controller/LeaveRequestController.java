@@ -31,15 +31,8 @@ public class LeaveRequestController {
         return service.reject(id);
     }
 
-    @GetMapping("/employee/{employeeId}")
-    public List<LeaveRequestDto> getByEmployee(@PathVariable Long employeeId) {
-        return service.getByEmployee(employeeId);
-    }
-
-    @GetMapping("/team-overlap")
-    public List<LeaveRequestDto> getOverlappingForTeam(@RequestParam String teamName, 
-               @RequestParam LocalDate start, 
-               @RequestParam LocalDate end) {
-        return service.getOverlappingForTeam(teamName, start, end);
+    @GetMapping("/employee/{id}")
+    public List<LeaveRequestDto> getByEmployee(@PathVariable Long id) {
+        return service.getByEmployee(id);
     }
 }

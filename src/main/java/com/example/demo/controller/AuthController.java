@@ -1,12 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.LoginRequestDto;
-import com.example.demo.dto.LoginResponseDto;
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
 import com.example.demo.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
     
     private final AuthService authService;
@@ -16,7 +16,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDto login(@RequestBody LoginRequestDto request) {
-        return authService.login(request.getUsername(), request.getPassword());
+    public AuthResponse login(@RequestBody AuthRequest request) {
+        return authService.authenticate(request);
     }
 }
