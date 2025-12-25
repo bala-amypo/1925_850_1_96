@@ -5,23 +5,67 @@ import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 import java.util.Date;
 
-@Component // Important!
+@Component
 public class JwtTokenProvider {
-    private String jwtSecret = "change-this-secret-key-change-this-secret-key-change";
 
-    public JwtTokenProvider() {} // No-arg constructor for tests
+    // The test class uses reflection to inject into this exact field name
+    private String jwtSecret = "change-this-secret-key-change-this-secret-key-change";
+    private long jwtExpirationInMs = 3600000; // 1 hour
+
+    // TestNG setup calls new JwtTokenProvider() directly
+    public JwtTokenProvider() {
+    }
 
     public String generateToken(UserAccount user) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("userId", user.getId())
-                .claim("role", user.getRole())
                 .claim("email", user.getEmail())
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
-    
-    // ... rest of the methods (getEmail, getRole, getUserId, validateToken) as provided before
+
+    public String getEmail(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
+    public String getRole(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("role", String.class);
+    }
+
+    public Long getUserId(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+        // Extracting as Number to avoid ClassCastException between Integer/Long
+        Object userId = claims.get("userId");
+        if (userId instanceof Number) {
+            return ((Number) userId).longValue();
+        }
+        return Long.parseLong(userId.toString());
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            return true;
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+            return false;
+        }
+    }
 }
