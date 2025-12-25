@@ -8,91 +8,105 @@ import com.example.demo.model.LeaveRequest;
 import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.service.LeaveRequestService;
+import com.example.demo.util.DateRangeUtil;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class LeaveRequestServiceImpl implements LeaveRequestService {
-    
+
     private final LeaveRequestRepository leaveRepo;
     private final EmployeeProfileRepository employeeRepo;
-    
-    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRepo, EmployeeProfileRepository employeeRepo) {
+
+    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRepo,
+                                   EmployeeProfileRepository employeeRepo) {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
-    
+
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
-        EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
+        EmployeeProfile emp = employeeRepo.findById(dto.employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-        
-        if (dto.getStartDate().isAfter(dto.getEndDate())) {
-            throw new BadRequestException("Start date must be before or equal to end date");
+
+        if (dto.startDate.isAfter(dto.endDate)) {
+            throw new BadRequestException("Start date cannot be after end date");
         }
-        
-        LeaveRequest leave = new LeaveRequest();
-        leave.setEmployee(employee);
-        leave.setStartDate(dto.getStartDate());
-        leave.setEndDate(dto.getEndDate());
-        leave.setType(dto.getType());
-        leave.setReason(dto.getReason());
-        leave.setStatus(LeaveRequest.LeaveStatus.PENDING);
-        
-        leave = leaveRepo.save(leave);
-        return mapToDto(leave);
+
+        LeaveRequest lr = new LeaveRequest();
+        lr.setEmployee(emp);
+        lr.setStartDate(dto.startDate);
+        lr.setEndDate(dto.endDate);
+        lr.setType(dto.type);
+        lr.setStatus("PENDING");
+        lr.setReason(dto.reason);
+
+        leaveRepo.save(lr);
+        dto.id = lr.getId();
+        dto.status = lr.getStatus();
+        return dto;
     }
-    
+
     @Override
     public LeaveRequestDto approve(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Leave request not found"));
-        
-        leave.setStatus(LeaveRequest.LeaveStatus.APPROVED);
-        leave = leaveRepo.save(leave);
-        return mapToDto(leave);
+        LeaveRequest lr = leaveRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Leave not found"));
+        lr.setStatus("APPROVED");
+        leaveRepo.save(lr);
+
+        LeaveRequestDto dto = new LeaveRequestDto();
+        dto.id = lr.getId();
+        dto.status = lr.getStatus();
+        return dto;
     }
-    
+
     @Override
     public LeaveRequestDto reject(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Leave request not found"));
-        
-        leave.setStatus(LeaveRequest.LeaveStatus.REJECTED);
-        leave = leaveRepo.save(leave);
-        return mapToDto(leave);
+        LeaveRequest lr = leaveRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Leave not found"));
+        lr.setStatus("REJECTED");
+        leaveRepo.save(lr);
+
+        LeaveRequestDto dto = new LeaveRequestDto();
+        dto.id = lr.getId();
+        dto.status = lr.getStatus();
+        return dto;
     }
-    
+
     @Override
     public List<LeaveRequestDto> getByEmployee(Long employeeId) {
-        EmployeeProfile employee = employeeRepo.findById(employeeId)
+        EmployeeProfile emp = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-        
-        return leaveRepo.findByEmployee(employee)
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+
+        return leaveRepo.findByEmployee(emp).stream().map(lr -> {
+            LeaveRequestDto dto = new LeaveRequestDto();
+            dto.id = lr.getId();
+            dto.employeeId = emp.getId();
+            dto.startDate = lr.getStartDate();
+            dto.endDate = lr.getEndDate();
+            dto.type = lr.getType();
+            dto.status = lr.getStatus();
+            dto.reason = lr.getReason();
+            return dto;
+        }).collect(Collectors.toList());
     }
-    
+
     @Override
     public List<LeaveRequestDto> getOverlappingForTeam(String teamName, LocalDate start, LocalDate end) {
         return leaveRepo.findApprovedOverlappingForTeam(teamName, start, end)
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
-    
-    private LeaveRequestDto mapToDto(LeaveRequest leave) {
-        LeaveRequestDto dto = new LeaveRequestDto();
-        dto.setId(leave.getId());
-        dto.setEmployeeId(leave.getEmployee().getId());
-        dto.setStartDate(leave.getStartDate());
-        dto.setEndDate(leave.getEndDate());
-        dto.setType(leave.getType());
-        dto.setStatus(leave.getStatus().name());
-        dto.setReason(leave.getReason());
-        return dto;
+                .stream().map(lr -> {
+                    LeaveRequestDto dto = new LeaveRequestDto();
+                    dto.id = lr.getId();
+                    dto.employeeId = lr.getEmployee().getId();
+                    dto.startDate = lr.getStartDate();
+                    dto.endDate = lr.getEndDate();
+                    dto.type = lr.getType();
+                    dto.status = lr.getStatus();
+                    dto.reason = lr.getReason();
+                    return dto;
+                }).collect(Collectors.toList());
     }
 }
