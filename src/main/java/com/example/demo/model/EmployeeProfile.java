@@ -1,11 +1,10 @@
 package com.example.demo.model;
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity @Data
+@Entity
 public class EmployeeProfile {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,4 +18,22 @@ public class EmployeeProfile {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<EmployeeProfile> colleagues = new HashSet<>();
+
+    public EmployeeProfile() {}
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getEmployeeId() { return employeeId; }
+    public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getTeamName() { return teamName; }
+    public void setTeamName(String teamName) { this.teamName = teamName; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+    public Set<EmployeeProfile> getColleagues() { return colleagues; }
+    public void setColleagues(Set<EmployeeProfile> colleagues) { this.colleagues = colleagues; }
 }
