@@ -1,31 +1,22 @@
 package com.example.demo.model;
-
 import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "employee_profiles")
+@Entity @Data
 public class EmployeeProfile {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String employeeId;
+    @Column(unique = true) private String employeeId;
     private String fullName;
-    private String email;
+    @Column(unique = true) private String email;
     private String teamName;
     private String role;
     private boolean active = true;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ManyToMany
-    @JoinTable(
-        name = "employee_colleagues",
-        joinColumns = @JoinColumn(name = "employee_id"),
-        inverseJoinColumns = @JoinColumn(name = "colleague_id")
-    )
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<EmployeeProfile> colleagues = new HashSet<>();
-
-    // getters & setters
 }
