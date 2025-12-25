@@ -1,31 +1,39 @@
-package com.example.demo.model; // <- make sure package matches folder structure
-
-// JPA imports
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
+import java.util.List; // for List
+import java.util.ArrayList;
 
 @Entity
-@Table(name = "employee_profile", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"email"})
-})
 public class EmployeeProfile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String employeeId;
+    private String fullName;
     private String email;
+    private String teamName;
+    private String role;
+    private boolean active;
 
-    @ManyToMany
-    private List<Role> roles;
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    // getters & setters
+    public String getEmployeeId() { return employeeId; }
+    public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
+
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getTeamName() { return teamName; }
+    public void setTeamName(String teamName) { this.teamName = teamName; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
