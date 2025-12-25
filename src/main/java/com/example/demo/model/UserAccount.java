@@ -1,21 +1,13 @@
 package com.example.demo.model;
-
 import jakarta.persistence.*;
+import lombok.Data;
 
-@Entity
-@Table(name = "users")
+@Entity @Data
 public class UserAccount {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String email;
+    @Column(unique = true) private String email;
     private String password;
     private String role;
-
-    @OneToOne
-    private EmployeeProfile employeeProfile;
-
-    // getters & setters
+    @OneToOne private EmployeeProfile employeeProfile;
 }

@@ -1,21 +1,12 @@
 package com.example.demo.model;
-
 import jakarta.persistence.*;
+import lombok.Data;
 
-@Entity
-@Table(
-    name = "team_capacity_config",
-    uniqueConstraints = @UniqueConstraint(columnNames = "teamName")
-)
+@Entity @Data
 public class TeamCapacityConfig {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String teamName;
+    @Column(unique = true) private String teamName;
     private int totalHeadcount;
     private int minCapacityPercent;
-
-    // getters & setters
 }
