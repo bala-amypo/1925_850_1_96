@@ -9,43 +9,39 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TeamCapacityRuleServiceImpl implements TeamCapacityRuleService {
-    
-    private final TeamCapacityConfigRepository repository;
+    private final TeamCapacityConfigRepository repo;
 
-    public TeamCapacityRuleServiceImpl(TeamCapacityConfigRepository repository) {
-        this.repository = repository;
+    public TeamCapacityRuleServiceImpl(TeamCapacityConfigRepository repo) {
+        this.repo = repo;
     }
 
     @Override
     public TeamCapacityConfig createRule(TeamCapacityConfig rule) {
-        validateRule(rule);
-        return repository.save(rule);
+        validate(rule);
+        return repo.save(rule);
     }
 
     @Override
     public TeamCapacityConfig updateRule(Long id, TeamCapacityConfig updatedRule) {
-        TeamCapacityConfig existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Team capacity rule not found"));
-        
-        validateRule(updatedRule);
-        existing.setTeamName(updatedRule.getTeamName());
+        TeamCapacityConfig existing = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rule not found"));
+        validate(updatedRule);
         existing.setTotalHeadcount(updatedRule.getTotalHeadcount());
         existing.setMinCapacityPercent(updatedRule.getMinCapacityPercent());
-        
-        return repository.save(existing);
+        return repo.save(existing);
     }
 
     @Override
     public TeamCapacityConfig getRuleByTeam(String teamName) {
-        return repository.findByTeamName(teamName)
+        return repo.findByTeamName(teamName)
                 .orElseThrow(() -> new ResourceNotFoundException("Capacity config not found"));
     }
 
-    private void validateRule(TeamCapacityConfig rule) {
-        if (rule.getTotalHeadcount() == null || rule.getTotalHeadcount() < 1) {
+    private void validate(TeamCapacityConfig rule) {
+        if (rule.getTotalHeadcount() == null || rule.getTotalHeadcount() <= 0) {
             throw new BadRequestException("Invalid total headcount");
         }
-        if (rule.getMinCapacityPercent() == null || rule.getMinCapacityPercent() < 1 || rule.getMinCapacityPercent() > 100) {
+        if (rule.getMinCapacityPercent() < 1 || rule.getMinCapacityPercent() > 100) {
             throw new BadRequestException("Min capacity percent must be between 1 and 100");
         }
     }

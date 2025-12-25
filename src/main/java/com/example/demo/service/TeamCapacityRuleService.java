@@ -1,5 +1,4 @@
 package com.example.demo.service;
-
 import com.example.demo.model.TeamCapacityConfig;
 
 public interface TeamCapacityRuleService {
