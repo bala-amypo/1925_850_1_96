@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -8,6 +8,7 @@ public class CapacityAlert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     private String teamName;
     private LocalDate date;
     private String severity;
@@ -22,7 +23,6 @@ public class CapacityAlert {
         this.message = message;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTeamName() { return teamName; }
