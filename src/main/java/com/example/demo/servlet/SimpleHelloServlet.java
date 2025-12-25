@@ -5,21 +5,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.io.IOException;
+import java.io.IOException;
 
 public class SimpleHelloServlet extends HttpServlet {
-    
-    private String message = "Hello from servlet";
+    private String message;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        if (config != null) {
-            super.init(config);
-        }
+        if (config != null) super.init(config);
+        this.message = "Hello from servlet";
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("text/plain");
         resp.getWriter().write(message);
     }

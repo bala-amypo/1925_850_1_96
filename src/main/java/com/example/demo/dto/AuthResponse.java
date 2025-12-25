@@ -1,5 +1,4 @@
 package com.example.demo.dto;
-
 public class AuthResponse {
     private String token;
     private Long userId;
@@ -7,14 +6,12 @@ public class AuthResponse {
     private String role;
 
     public AuthResponse() {}
-
     public AuthResponse(String token, Long userId, String email, String role) {
         this.token = token;
         this.userId = userId;
         this.email = email;
         this.role = role;
     }
-
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
     public Long getUserId() { return userId; }
