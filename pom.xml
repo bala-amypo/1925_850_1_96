@@ -9,7 +9,7 @@
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>LeaveOverlapTeamCapacityAnalyzer</name>
-    <description>Leave Overlap & Team Capacity Analyzer Backend</description>
+    <description>Leave Overlap &amp; Team Capacity Analyzer Backend</description>
     <packaging>jar</packaging>
 
     <parent>
@@ -65,7 +65,7 @@
             <version>${springdoc.version}</version>
         </dependency>
 
-        <!-- Lombok (optional, if using annotations like @Data) -->
+        <!-- Lombok (optional) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
