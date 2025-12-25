@@ -23,6 +23,7 @@
         <java.version>17</java.version>
         <springdoc.version>2.1.0</springdoc.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <mysql.version>8.1.1</mysql.version>
     </properties>
 
     <dependencies>
@@ -42,6 +43,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -65,7 +67,7 @@
             <version>${springdoc.version}</version>
         </dependency>
 
-        <!-- Lombok (optional) -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -91,7 +93,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
