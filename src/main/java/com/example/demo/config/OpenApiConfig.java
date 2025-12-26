@@ -18,12 +18,12 @@ public class OpenApiConfig {
         return new OpenAPI()
                 // 1. Project Name and Description
                 .info(new Info()
-                        .title("Customer Loyalty Tier Upgrader API")
+                        .title("Leave Overlap")
                         .version("1.0")
-                        .description("API documentation for Customer Loyalty project"))
+                        .description("API documentation for Leave Overlap"))
                 // 2. Your Specific Server URL (Preserved)
                 .servers(List.of(
-                        new Server().url("https://9202.408procr.amypo.ai/")
+                        new Server().url("https://9226.408procr.amypo.ai/")
                 ))
                 // 3. Add Authorize Padlock (Security Requirement)
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
