@@ -51,78 +51,6 @@
 
 
 
-// package com.example.demo.config;
-
-// import com.example.demo.security.JwtAuthenticationFilter;
-// import io.swagger.v3.oas.models.Components;
-// import io.swagger.v3.oas.models.OpenAPI;
-// import io.swagger.v3.oas.models.security.SecurityRequirement;
-// import io.swagger.v3.oas.models.security.SecurityScheme;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-// import org.springframework.security.authentication.AuthenticationManager;
-// import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-// import org.springframework.security.config.http.SessionCreationPolicy;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-// import org.springframework.security.crypto.password.PasswordEncoder;
-// import org.springframework.security.web.SecurityFilterChain;
-// import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-// @Configuration
-// @EnableWebSecurity
-// public class SecurityConfig {
-
-//     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-//     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
-//         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-//     }
-
-//     @Bean
-//     public PasswordEncoder passwordEncoder() {
-//         return new BCryptPasswordEncoder();
-//     }
-
-//     @Bean
-//     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-//         return config.getAuthenticationManager();
-//     }
-
-//     @Bean
-//     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//         http
-//             .csrf(csrf -> csrf.disable()) // Required to allow POST /auth/register
-//             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//             .authorizeHttpRequests(auth -> auth
-//                 .requestMatchers("/auth/**").permitAll()    // Permit Login/Register
-//                 .requestMatchers("/api/**").authenticated() // Protect API routes
-//                 .anyRequest().permitAll()
-//             );
-
-//         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//         return http.build();
-//     }
-
-//     // This adds the "Authorize" button to Swagger
-//     @Bean
-//     public OpenAPI customOpenAPI() {
-//         return new OpenAPI()
-//                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
-//                 .components(new Components().addSecuritySchemes("Bearer Authentication", 
-//                     new SecurityScheme()
-//                         .name("Bearer Authentication")
-//                         .type(SecurityScheme.Type.HTTP)
-//                         .scheme("bearer")
-//                         .bearerFormat("JWT")));
-//     }
-// }
-
-
-
-
-
 package com.example.demo.config;
 
 import com.example.demo.security.JwtAuthenticationFilter;
@@ -134,7 +62,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -148,8 +75,9 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    // FIX: Changed return type to BCryptPasswordEncoder to match AuthServiceImpl's requirement
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -164,8 +92,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) 
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()    // Fix for /auth/register and /auth/login
-                .requestMatchers("/api/**").authenticated() // Protects api routes
+                .requestMatchers("/auth/**").permitAll()    // Enables /auth/register and /auth/login
+                .requestMatchers("/api/**").authenticated() // Protects your API routes
                 .anyRequest().permitAll()
             );
 
